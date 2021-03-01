@@ -13,10 +13,10 @@ geometry: margin=2.54cm
 
 ## OVERVIEW
 
-Eventually, you may choose to set up your personal computer with Git.
-But to ensure that things go smoothly, you will have access to a Mac desktop computer located in Lindley Hall.
-You will then use your assigned computer by establishing a Remote Desktop connection.
-You will use Git and GitHub on that computer to access and record changes to QB **worksheets** that contain in-class **exercises** and **assignments** that will eventually be submitted.
+Eventually, you may choose to set up your personal computer with Git. 
+But to help ensure that things go smoothly, you will have access to a dedicated Mac desktop computer that is located in Lindley Hall, which you can access using a Remote Desktop connection.
+This computer has all the software required for the course.
+You will use Git and GitHub on that computer to access and record changes to QB **worksheets** that contain in-class **exercises** and **assignments** that will eventually be submitted via Github.
 The instructions below will show you how to configure github on a computer. 
 After that, you will learn how to **fork** and **clone** a GitHub repository. 
 Finally, you will learn how to **commit** and **push** changes so that you can access them later on your personal computer using **fetch** and **merge** commands.  
@@ -29,10 +29,10 @@ To avoid any initial complications arising from software incompatibility, at lea
 Please follow these steps:
 
 1. Visit https://uits.iu.edu/iuanyware and click on "Apps" along the top banner
-2. Select "Remote Desktop Connection" from the list of software  
+2. Select "Remote Desktop Connection" from the list of software
 3. Enter the IP address that was assigned to you in the text box following "Computer" and hit "connect"
-4. Supply your IU username and password  
-5. You should now see the desktop of the computer in Lindley Hall 
+4. Supply your IU username and password
+5. You should now see the desktop of the computer in Lindley Hall
 
 ### 2) Git Test
 Before we get started with Git, we first need to test our current installation to make sure there aren't any issues.
@@ -110,7 +110,7 @@ We *strongly* urge that you configure this behavior in order to prevent any futu
 ## 5) Fork and Clone a Repo
 1. Navigate to the QB student organization: https://github.com/QBstudents
 2. Click on the repository (repo) with your name
-3. Fork your repo by clicking on the Fork Icon in the top right of your screen<br>
+3. Fork your repo by clicking on the Fork icon in the top right of your screen<br>
 
     \includegraphics[width=2cm]{images/github_fork_btn.png}
 
@@ -169,7 +169,7 @@ We check for these changes using the git commands **fetch** and **merge** as fol
 
     ```sh
     git fetch upstream
-    git merge upstream/master
+    git merge upstream/main
     git push origin
     git status
     ```
@@ -194,7 +194,7 @@ In addition to pulling your upstream repo, you always want to push any updates t
     ```sh
     git status
     git fetch upstream
-    git merge upstream/master
+    git merge upstream/main
     git push origin
     git status
     ```
@@ -211,7 +211,7 @@ All are defined with respect to how we will be using Git and GitHub in this clas
 \begin{tabular}{ m{3cm} m{12cm} }
   \textbf{Term} & \textbf{Meaning} \\
   \hline \hline \\ [-1.5ex]
-  \textbf{\emph{Repository}} & 
+  \textbf{\emph{repository}} & 
   The collection of files and folders that compose a project. \\
   \\ [-1.5ex]
   \textbf{\emph{upstream}} & 
@@ -235,7 +235,7 @@ All are defined with respect to how we will be using Git and GitHub in this clas
     \textbf{\emph{pull}} & 
   'fetch' + 'merge'. 'pull' executes 'fetch' and 'merge' but give less freedom of control. \\
   \\ [-1.5ex] 
-    \textbf{\emph{Staging Area}} & 
+    \textbf{\emph{staging area}} & 
   A file that Git uses to store information about your changes. \\
   \\ [-1.5ex]  
     \textbf{\emph{add}} & 
@@ -247,7 +247,7 @@ All are defined with respect to how we will be using Git and GitHub in this clas
     \textbf{\emph{push}} & 
   Having committed your changes, this command will update 'origin'. \\
   \\ [-1.5ex] 
-    \textbf{\emph{Pull Request}} & 
+    \textbf{\emph{pull request}} & 
   Having updated 'origin', request that these changes be pulled into 'upstream'\\
   \\ [-1.5ex] 
   \hline
