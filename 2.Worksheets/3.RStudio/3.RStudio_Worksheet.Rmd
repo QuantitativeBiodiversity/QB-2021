@@ -302,5 +302,5 @@ Describe what you learned below in the "Answer" section and include appropriate 
 Use Knitr to create a PDF of your completed **3.RStudio_Worksheet.Rmd** document, push the repo to GitHub, and create a pull request.
 Please make sure your updated repo include both the PDF and RMarkdown files.
 
-This assignment is due on **Wednesday, January 24^th^, 2021 at 12:00 PM (noon)**.
+This assignment is due on **Wednesday, March 24^th^, 2021 at 12:00 PM (noon)**.
 

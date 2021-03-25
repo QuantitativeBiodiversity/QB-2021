@@ -117,7 +117,7 @@ We *strongly* urge that you configure this behavior in order to prevent any futu
     You should now see the repo on your GitHub page.
 
 4. Clone the repo onto your local machine using the command line (Terminal).
-Replace "username" with your GitHub username and "repo" with the name of the repo in the QBStudent organization (e.g., QB2021_Fishman)
+Replace "username" with your GitHub username and "repo" with the name of the repo in the QBstudent organization (e.g., QB2021_Fishman)
 
     ```sh
     cd ~/GitHub
@@ -134,7 +134,7 @@ The following commands will set the location of your **upstream remote repositor
 
     ```sh
     git remote -v
-    git remote add upstream https://github.com/QBStudents/repo
+    git remote add upstream https://github.com/QBstudents/repo
     git remote -v
     ```
     You can copy and paste the URL for your upstream repo from the GitHub website.
