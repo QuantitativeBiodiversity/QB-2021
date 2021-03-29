@@ -1,0 +1,149 @@
+---
+title: '7a\. Data wrangling and simulated communitites'
+author: 'Z620: Quantitative Biodiversity, Indiana University'
+header-includes:
+   - \usepackage{array}
+output: pdf_document
+geometry: margin=2.54cm
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width = 7, fig.height = 7)
+```
+
+# APPLYING CONTROL STUCTURES TO DIVERSITY DATA
+The control structures discussed above have unlimited applications in the realm of quantitative methods. 
+In this section you will learn how to apply these structures to biodiversity data that we simulate. We will utilize conventional control structures, apply functions, and tidyverse functions to wrangle our data to ansswer our questions about alpha diversity.
+
+## A. Generating the Source Community    
+Here, we will simulate a digital community assuming that species abundances follow a log-normal distribution using the mobsim package. 
+We will draw a sequence of random numbers from the log-normal distribution. The cool thing about the mobsim package is that we can specify the number of species and individuals in our simulated community as well as tools to sample the community.
+
+```{r message=FALSE}
+#install.packages("mobsim")
+library(mobsim)
+```
+
+### Simulate community with random spatial positions
+```{r}
+#The following code chunck will allow us to simulate a community of 25 different species with 1000 individuals in total. In this example we use a log-normal species abundance distribution with a mean of 2 and standard deviation 1.
+com1 <- sim_poisson_community(s_pool = 25, n_sim = 1000, sad_type = "lnorm",sad_coef = list("meanlog" = 2, "sdlog" = 1))
+plot(com1) #This function will allow us to visualize the community we are workng with.
+```
+
+Let's plot the rank-abundance curve of our community using the `rad` function from the `vegan` package  
+
+```{r, results='hide', message=FALSE, warning=FALSE, fig.width = 5, fig.height = 3.5, fig.align='center'}
+require (vegan)
+RACresults <- rad.lognormal(comm_mat1$spec_dat)
+print(RACresults)
+plot(RACresults, las = 1, cex.lab = 1.4, cex.axis = 1.25)
+```
+## B. Sample species diversity in the simulated community.
+Using the mobsim prebuilt functions, we can sample the number of taxa using similar methods that we would apply in the field. The `sample_quadrants` function will allow us to perform random, transect, or grid sampling strategies. 
+
+### Plot-based samples from a spatially-explicit census
+The following code chunk relies heavily on using standard controls structures to obtain diversity statistics across sample sites.
+
+```{r}
+#install.packages("vegan")
+library(vegan)
+comm_mat1 <- sample_quadrats(com1, n_quadrats = 10,
+quadrat_area = 0.01, method = "random", avoid_overlap = T)  #From the community we just created, we are now sampling 10 different quadrants randomly with area size of 0.01.
+
+#Diversity statistics: first setup data frame to summarize all of the data.
+comm_mat1_diversity = as.data.frame(matrix(ncol=6,nrow=10))
+colnames(comm_mat1_diversity) <- c('richness','shannon','invsimpson','soil','mean_sp','se_sp')
+rownames(comm_mat1_diversity) <- rownames(comm_mat1$spec_dat)
+
+#Some of the statistics are really simple to obtain with vegan.
+comm_mat1_diversity[,1] <- specnumber(comm_mat1$spec_dat)[1:10]
+comm_mat1_diversity[,2] <- diversity(comm_mat1$spec_dat, index = "shannon")[1:10]
+comm_mat1_diversity[,3] <- diversity(comm_mat1$spec_dat, index = "invsimpson")[1:10]
+
+#Let's randomly assign soil type to each site. Create a equal number of each soil type and then randomly assign category to each site. The function include 'replace = FALSE', which does not replace the variable sampled.
+soil_type = c(rep('dry',5),rep('wet',5))
+comm_mat1_diversity[,4] <- sample(soil_type,10,replace=FALSE)
+
+#Let's calculate the mean number of individuals per species (for species present at a site) and the SE for each site.
+SE <- function(x) {
+  return(sd(x)/sqrt(length(x)))
+}
+
+for(i in 1:10) {
+  x = as.numeric(comm_mat1$spec_dat[i,])
+  x = x[x>0]
+  comm_mat1_diversity[i,5] <- mean(x)
+  comm_mat1_diversity[i,6] <- SE(x)
+}
+```
+
+Let's plot the dataset using ggplot to observe the diveristy statistics for each soil type we assigned above.
+
+The following code chunck relies on using the tidyverse packages tidyr and dplyr. Notice the usage of the %>% operator. This symbol will allos us to carry data forward through several steps without having to specify data in each step.
+
+```{r}
+# We can shape and summarize the data using tidyverse
+#install.packages(c("tidyr","ggplot2","dplyr))
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+
+comm_mat1_tidy <- comm_mat1_diversity %>% # this is a pipe operator, helps us to operate different functions within the same data set
+  select(richness, shannon, invsimpson, soil) %>% # here we select the columns we are interested in
+  pivot_longer(cols = c(richness, shannon, invsimpson), names_to = "indices", values_to = "value" )  %>% # we can convert the data to longitidunal format, which can help us to summarize all indices at the same time. Longitidunal format (or long format) is also practical for plotting such as for choosing colors, shapes and creating panels as well as performing univariate statistical methods.
+  group_by(soil, indices) %>% # we can group the dataset by factors in a given row, and then calculate the summary statistics for each level of the factors. 
+  summarise(mean = mean(value), sd = sd(value)) # here we calculate mean and standard deviation of each indices and each soil type. 
+
+# Now we can plot richness; shannon and simpsons diversity for the two different soil types
+ggplot(comm_mat1_tidy, aes(x = soil, y = mean, color = soil))+ # First we create an empty plot with the information of what is going to be x and y axis. Using "+" we can layer all the plot features we want. We can also define the grouping factors, which help us to plot different levels with different colors and shapes.
+  geom_point(size = 3) + # we choose the plot type (e.g points, lines, boxplots)+
+  geom_errorbar(aes(ymin = mean+sd, ymax = mean-sd), width=0.2)+ #Here we plot the error bars 
+  labs(x = "Soil type", y = "Richness and diversity")+
+  facet_wrap(~indices, scales = "free")+ # This option helps us to plot different factor levels in different panels.
+  theme_bw()+ #Themes are a way to modify the plots so that they can become publication ready plots. You can also save your prefrences and re-use them later.
+  scale_color_manual(values = c("#999999", "#E69F00")) #You can choose different color palettes if you do not want to use the standard colors in ggplot2.
+```  
+  
+## C. Apply different control structures to test several different sampling strategies
+How does quadrant sampling strategy influence the number of species we detect per quadrant? We will use a for loop to apply several different sampling strategies and plot the data we collect using ggplot2.
+
+In this example, we will highlight how we can combine all of the strategies we've learned to wrangle our data.
+
+```{r}
+#Effect of plot size on the detection of number of individuals 
+plot_sizes = c(0.006, 0.008, 0.01, 0.02, 0.04)
+all_sizes = list()
+par(mfrow = c(2, 3))
+
+for (i in 1:length(plot_sizes)){
+    tmp <- sample_quadrats(com1, n_quadrats = 6, quadrat_area = plot_sizes[i], method = "grid", delta_x = 0.25 , delta_y = 0.25, x0 = 0.2, y0 = 0.2, avoid_overlap = T)
+    name <- paste(plot_sizes[i])
+    all_sizes[[name]] <- tmp 
+}
+
+# `apply` example (calculating species richness from the list of sampling simulations with different plot sizes)
+num_species_found <- sapply(all_sizes, function(x) lapply(specnumber(x$spec_dat), mean))
+# we have apply a function in a data set (species-site matrix) nested within a list (different plot sizes). There are different apply functions for different purposes. While  "lapply" creates a list as an output "sapply" allows us to create a matrix.
+
+num_species_found <- as.data.frame(num_species_found)
+
+#Let's tidy this data set for the plot
+num_species_tidy <-  num_species_found %>%
+   mutate(site = rownames(num_species_found)) %>% # here we add the sites as a new column 
+   gather("size", "richness", -site) # another function to trasform the table format
+#Plot
+ggplot(num_species_tidy, aes(x = as.numeric(size), y = as.numeric(richness), color = site))+
+  geom_hline(yintercept = 25, linetype = "dashed")+
+    geom_point()+
+    geom_line()+
+    labs (y = "Species found", x = "Plot size")+
+    theme_bw()
+
+```
+
+## Self study  
+
+1. How would diversity description change if individuals are more clumped in space? Tip: mobsim package has a function, sim_thomas_community(), to simulate species clumped in space. 
+
+2. How would diversity description change species complexity (number of species simulated), or changes in number of individuals?
