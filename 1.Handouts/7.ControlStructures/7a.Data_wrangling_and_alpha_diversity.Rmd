@@ -11,61 +11,87 @@ geometry: margin=2.54cm
 knitr::opts_chunk$set(echo = TRUE, fig.width = 7, fig.height = 7)
 ```
 
-# APPLYING CONTROL STUCTURES TO DIVERSITY DATA
-The control structures discussed above have unlimited applications in the realm of quantitative methods. 
-In this section you will learn how to apply these structures to biodiversity data that we simulate. We will utilize conventional control structures, apply functions, and tidyverse functions to wrangle our data to ansswer our questions about alpha diversity.
+## OVERVIEW
 
-## A. Generating the Source Community    
-Here, we will simulate a digital community assuming that species abundances follow a log-normal distribution using the mobsim package. 
-We will draw a sequence of random numbers from the log-normal distribution. The cool thing about the mobsim package is that we can specify the number of species and individuals in our simulated community as well as tools to sample the community.
+Much of the power of computing stems from the efficiency of computers in performing small tasks in an iterative manner. 
+In this lesson, we will explore different ways of manipulating or "wrangling" data with the goal of making in easier to compute relevant statistics and generate figures. 
+Specifically, we will introduce traditional **control structures** (e.g., for loops), along with alternative and commonly used tools that are unique to the R statistical package, such as `apply` functions and `tidyverse`. 
+We will learn about these tools while using packages that allow us to simulate the sample biodiversity.
+
+## A. Simulating Biodiversity  
+
+To reinforce principles of alpha diversity, we are going to use the `mobsim` package, which was designed for the simulation and measurement of biodiversity across spatial scales: https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.12986.
+Often, simulations are initiated by taking a random draw of individuals from a *source community*, which is intended to reflect the regional pool of species.
+In this way, the number of individuals (*N*) and species (*S*) can be specified so that we create **local communities** that we will then sample. 
+Let's start by loading the `mobsim` package:
 
 ```{r message=FALSE}
 #install.packages("mobsim")
 library(mobsim)
 ```
 
-### Simulate community with random spatial positions
+### Simulate source community with random spatial positions
+
+The following code simulates a local plant community containing 1000 individuals (*N*) belonging to 25 species (*S*) 
+These individuals are drawn from source community with a log-normal *species abundance distribution (SAD)* with mean = 2 and standard deviation = 1. 
+
 ```{r}
-#The following code chunck will allow us to simulate a community of 25 different species with 1000 individuals in total. In this example we use a log-normal species abundance distribution with a mean of 2 and standard deviation 1.
-com1 <- sim_poisson_community(s_pool = 25, n_sim = 1000, sad_type = "lnorm",sad_coef = list("meanlog" = 2, "sdlog" = 1))
-plot(com1) #This function will allow us to visualize the community we are workng with.
+# simulate local community
+com1 <- sim_poisson_community(s_pool = 25, n_sim = 1000, sad_type = "lnorm", 
+        sad_coef = list("meanlog" = 2, "sdlog" = 1))
+# visualize local community
+plot(com1)
 ```
 
-Let's plot the rank-abundance curve of our community using the `rad` function from the `vegan` package  
+Let's quickly take a look at the rank-abundance curve of our plant community using the `rad` function from the `vegan` package  
 
 ```{r, results='hide', message=FALSE, warning=FALSE, fig.width = 5, fig.height = 3.5, fig.align='center'}
 require (vegan)
-RACresults <- rad.lognormal(comm_mat1$spec_dat)
+#RACresults <- rad.lognormal(comm_mat1$spec_dat) ### comm_mat1 is being called too soon...not introduced until below.
 print(RACresults)
 plot(RACresults, las = 1, cex.lab = 1.4, cex.axis = 1.25)
 ```
-## B. Sample species diversity in the simulated community.
-Using the mobsim prebuilt functions, we can sample the number of taxa using similar methods that we would apply in the field. The `sample_quadrants` function will allow us to perform random, transect, or grid sampling strategies. 
 
-### Plot-based samples from a spatially-explicit census
-The following code chunk relies heavily on using standard controls structures to obtain diversity statistics across sample sites.
+## B. Sample species diversity in the simulated community
+
+Using functions from the `mobsim` package, we can sample the plant communities using methods that are commonly used in the field. 
+For example, the `sample_quadrants` function allow us to collect individuals from random, transect, or grid sampling techniques. 
+
+### Plot-based samples from a spatially explicit census
+
+From the community we created above, we will now randomly sample 10 different quadrants with area size of 0.01. 
 
 ```{r}
-#install.packages("vegan")
-library(vegan)
-comm_mat1 <- sample_quadrats(com1, n_quadrats = 10,
-quadrat_area = 0.01, method = "random", avoid_overlap = T)  #From the community we just created, we are now sampling 10 different quadrants randomly with area size of 0.01.
+# Lay down sampling quadrants on your community 
+comm_mat1 <- sample_quadrats(com1, n_quadrats = 10, quadrat_area = 0.01, 
+             method = "random", avoid_overlap = T)  
 
-#Diversity statistics: first setup data frame to summarize all of the data.
-comm_mat1_diversity = as.data.frame(matrix(ncol=6,nrow=10))
+# Create an empty data frame for your quadrats
+comm_mat1_diversity <- as.data.frame(matrix(ncol = 6, nrow = 10))
 colnames(comm_mat1_diversity) <- c('richness','shannon','invsimpson','soil','mean_sp','se_sp')
 rownames(comm_mat1_diversity) <- rownames(comm_mat1$spec_dat)
 
-#Some of the statistics are really simple to obtain with vegan.
+# Fill in data frame with diversity measures using vegan functions
 comm_mat1_diversity[,1] <- specnumber(comm_mat1$spec_dat)[1:10]
 comm_mat1_diversity[,2] <- diversity(comm_mat1$spec_dat, index = "shannon")[1:10]
 comm_mat1_diversity[,3] <- diversity(comm_mat1$spec_dat, index = "invsimpson")[1:10]
+```
 
-#Let's randomly assign soil type to each site. Create a equal number of each soil type and then randomly assign category to each site. The function include 'replace = FALSE', which does not replace the variable sampled.
-soil_type = c(rep('dry',5),rep('wet',5))
-comm_mat1_diversity[,4] <- sample(soil_type,10,replace=FALSE)
+Now, let's simulate different environmental conditions, which would affect where plant species are found. 
+Specifically, we are going to randomly assign soil property (wet vs. dry) to locations within the local community (i.e. `com1`)
+Create a equal number of each soil type and then randomly assign category to each site. 
+The function include 'replace = FALSE', which does not replace the variable sampled.
 
-#Let's calculate the mean number of individuals per species (for species present at a site) and the SE for each site.
+```{r}
+soil_type <- c(rep('dry', 5), rep('wet', 5))
+comm_mat1_diversity[,4] <- sample(soil_type, 10, replace = FALSE)
+```
+
+Now, we will use control structures, specifically, a for loop, to obtain diversity estimates across samples sites. 
+We will calculate the mean and standard error (SE) for number of individuals found in each species at each site:
+
+```{r}
+# write equation for SE
 SE <- function(x) {
   return(sd(x)/sqrt(length(x)))
 }
@@ -78,12 +104,16 @@ for(i in 1:10) {
 }
 ```
 
-Let's plot the dataset using ggplot to observe the diveristy statistics for each soil type we assigned above.
+In QB, most plotting will be done in using **R base package**. 
+However, lots of people like visualizing their data using the package *`ggplot`*. 
+Let's use this package to observe diversity patterns for each soil type we assigned above.
 
-The following code chunck relies on using the tidyverse packages tidyr and dplyr. Notice the usage of the %>% operator. This symbol will allos us to carry data forward through several steps without having to specify data in each step.
+The following code relies on using the *`tidyverse`* packages `tidyr` and `dplyr`. 
+Notice the usage of the %>% operator. 
+This symbol will allow us to carry data forward through several steps without having to specify data in each step.
+In the example below, we "shape" and "summarize" the data using `tidyverse `:
 
 ```{r}
-# We can shape and summarize the data using tidyverse
 #install.packages(c("tidyr","ggplot2","dplyr))
 library(tidyr)
 library(dplyr)
