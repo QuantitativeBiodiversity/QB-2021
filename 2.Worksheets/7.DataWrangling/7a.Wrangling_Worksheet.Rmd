@@ -1,5 +1,5 @@
 ---
-title: '7a\. Data wrangling with simulated communitites'
+title: '7\. Data wrangling with simulated communitites'
 author: 'Z620: Quantitative Biodiversity, Indiana University'
 header-includes:
    - \usepackage{array}
@@ -27,13 +27,14 @@ setwd("~/GitHub/QB-2021/1.Handouts/7.ControlStructures")
 
 To reinforce principles of alpha diversity, we are going to use the `mobsim` package, which was designed for the simulation and measurement of biodiversity across spatial scales: https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.12986.
 Simulation is an important and powerful tool, not only in the life sciences, but also a range of other disciplines. 
-It allows one to produce null models, generate hypotheses, and challenge our intuition about how the world works.  
-In the context of biodiversity, simulations are often initiated by randomly drawing individuals from a *source community*, which is intended to reflect the regional pool of species.
-In this way, we can build **local communities** while controlling for the number of individuals (*N*) and species (*S*) that we will then sample.
+It allows one to produce null models, generate hypotheses, and challenge our intuition about how the world works.
+In the context of biodiversity, simulations are often initiated by randomly drawing individuals from a **source community**, which is intended to reflect the regional pool of species.
+In this way, we can build **local communities** while controlling for the number of individuals (*N*) and species (*S*) that we will then sample.  
+
 Let's start by loading `mobsim`, along with other packages. 
-Given part of the focus of this module is control structures, you are going to load the package with a **for loop**. 
-In the code below, the `require()` function in `R` returns `TRUE` if a package was successfully loaded or `FALSE` if the package failed to load. 
-This loop loads each package and installs the package when `require()` returns `FALSE`:
+Given that a focus of this module is control structures, you are going to load the package with a **for loop**. 
+In the code below, the `require` function in `R` returns `TRUE` if a package was successfully loaded or `FALSE` if the package failed to load. 
+This loop loads each package and installs the package when `require` returns `FALSE`:
 
 
 ```{r, results = 'hide', message = FALSE, warning = FALSE}
@@ -103,7 +104,7 @@ plot(RACresults, las = 1, cex.lab = 1.4, cex.axis = 1.25, lty = 2, lwd = 2)
 
 ### C. Quantify diversity of simulated community
 
-Now, we will calculate richness, Shannon's diversity, and inverse Simpson's diversity for each of the 10 quadrats.
+Now, we will calculate richness, Shannon's diversity, and the inverse of Simpson's diversity for each of the 10 quadrats.
 With this, we will create a data frame that summarizes the diversity measures. 
 
 ```{r}
@@ -161,19 +162,19 @@ colnames(comm_mat1_diversity)[4:5] <- c('mean_sp','se_sp')
 
 ### B. Summarize diversity data with the `apply` function
 
-Although for loops and other control structures (e.g., while loops, if-then) are commonly used by computational biologists, there are some downsides.
+Although for loops and other control structures (e.g., while loops, if-then-else) are commonly used by computational biologists, there are some downsides.
 People argue that they lack clarity and can easily break.
 This can create confusion when the goal is for code to be robust and reproducible in collaborative projects. 
 Also, in R, control structures can be slow and inefficient. 
 Fortunately, there are some alternatives, that we'll introduce. 
-Within the base R package, there is a family of *`apply`** functions. 
+Within the base R package, there is a family of **`apply`** functions. 
 This allows one to apply functions across row and columns of matrices, lists, vectors, and data frames. 
-The structure of the **`apply`** function differs from the for loop. 
-In fact, it can be done with a single line of code, but it  has a similar wort of logic. 
-First, you specify the data object of of interest. 
-Second, you specify the margin that the function will operate (row =1, column = 2, cell = 1:2). 
+The structure of the `apply` function differs from the for loop. 
+In fact, it can be done with a single line of code, but it  has a similar sort of logic. 
+First, you specify the data object of interest. 
+Second, you specify the margin that the function will operate upon (row =1, column = 2, cell = 1:2). 
 Last, you specify the function to use, which can be a native, built-in function (e.g., `mean`) or one that you have written yourself (e.g., `sem`)
-Run the following code and compare to findings generated with for loop:
+Run the following code and compare to findings generated with the for loop above:
 
 
 ```{r}
@@ -191,7 +192,7 @@ comm_mat1_apply <- (t(comm_mat1_apply))
 Another popular approach for data wrangling is **`tidyverse`**, which is a collection R packages.
 **`dplyr`** contains a set of functions that manipulates data frames.
 **`tidyr`** allow one to pivot, nest, and separate data in various ways.
-And **`ggplot2`** is an alternative to plotting in base R that was designed to interface with tidyverse. 
+And **`ggplot2`** is an alternative to plotting in base R that was designed to interface with `tidyverse`. 
 `tidyverse` uses the **pipe operator**, depicted as `%>%`, to string together a sequence of functions or operations. 
 Below, we will use the pipe operator in combination to `shape` and `summarize` our diversity data, before making a plot. 
 
@@ -222,10 +223,10 @@ ggplot(comm_mat1_tidy, aes(x = indices, y = mean)) +
   
 ## 3) Wrangling a macroecological "law": the species area relationship (SAR)
   
-The species area relationship is one of the most commonly documented patterns of biodiversity. 
-It describes how the number of species recovered changes with increasing area sampled. 
+The species area relationship is one of the most ubiquitous patterns of biodiversity. 
+It describes how the number of species changes with increasing area sampled. 
 For nearly all taxonomic groups, species richness (*S*) increases **non-linearly** with area (*A*), often fitting a **power law** function:
-*S* = *c* *A*^*z*^, where *c* is a constant and *z* is describes the rate at which richness scales with area. 
+*S* = *c* *A*^*z*^, where *c* is a constant and *z* describes the rate at which richness scales with area. 
 When richness and area are log~10~-transformed, the SAR often takes on a linear form.
 However, the *z*-values of the SAR vary quite a bit among taxa. 
 For example, in bacterial communities, *z*-values are relatively low (0.05), while in plant communities they can be much higher (0.25). 
@@ -237,14 +238,21 @@ But the SAR is also influenced by biological phenomena including dispersal limit
 ## A. Construct a SAR from simulated data  
   
 1. Using the `sim_poisson_community` function from the `mobsim`, along with any of the data wrangling tools described above, construct a species area relationship (SAR).
-Make a plot of the data and calculate the *z*-value. 
+Feel free to choose different values for the the function's arguments. 
+Create an SAR plot and calculate the corresponding *z*-value. 
 
-2. The `sim_poisson_community`function simulates with species that have a random spatial distribution.
+2. The `sim_poisson_community`function simulates species that have a random spatial distribution.
 However, in nature, this is rarely the case. 
 Species often have patchy distributions, which can be simulated in `mobsim` using the the `sim_thomas_community` function.
-Include a plot of the patchy distribution. 
-Then, construct a new SAR with the patchy community and compare the *z*-values to the random distribution. 
+Include a plot of the patchy distribution using examples above.
+Then, create another SAR plot from the patchy community and compare its *z*-values to that of the random distribution. 
 
-3. Explain the SAR patterns and any observed differences based on how we have simulated the communities.
+3. Explain the SAR patterns from your simulations along with any observed differences based on how we have simulated the communities.
 Are there any features that you might include with a more elaborate simulation? 
 Describe. 
+
+## SUBMITTING YOUR ASSIGNMENT
+Use Knitr to create a PDF of your completed 7.Wrangling_Worksheet.Rmd document, push it to GitHub, and create a pull request.
+Please make sure your updated repo include both the pdf and RMarkdown files.
+
+Unless otherwise noted, this assignment is due on **Wednesday, April 9^th^, 2021 at 09:00 AM**.
