@@ -161,7 +161,7 @@ num_species_found <- as.data.frame(num_species_found)
 #Let's tidy this data set for the plot
 num_species_tidy <-  num_species_found %>%
    mutate(site = rownames(num_species_found)) %>% # here we add the sites as a new column 
-   gather("size", "richness", -site) # another function to transform the table format
+   gather("size", "richness", -site) # another function to trasform the table format
 #Plot
 ggplot(num_species_tidy, aes(x = as.numeric(size), y = as.numeric(richness), color = site))+
   geom_hline(yintercept = 25, linetype = "dashed")+
