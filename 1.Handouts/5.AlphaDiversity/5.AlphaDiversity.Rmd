@@ -19,7 +19,7 @@ From there, we will discuss ways to integrate richness and evenness, which will 
 ```{r, results = 'hide'}
 rm(list=ls()) 
 getwd() 
-setwd("~/GitHub/QB-2019/1.HandOuts/5.AlphaDiversity")
+setwd("~/GitHub/QB-2021/1.HandOuts/5.AlphaDiversity")
 ```
 
 ### B. Install Packages
@@ -469,31 +469,3 @@ A **broken stick model** (Pielou 1975) where the expected abundance of a species
 *N* is the total number of individuals and *S* is the total number of species.
 This gives a constraint-based null model where the *N* individuals are randomly distributed among *S* species, and there are no fitted parameters.
 Null models often reveal that realistic patterns can be expected from random sampling, and have been extremely useful in ecology and evolution.
-
-#### Preemption:
-The **niche preemption model** (a.k.a., geometric series or Motomura model): 
-Envision an environment occupied by a single species. 
-Now, envision that a second species colonizes the environment and takes some portion of resources equal to $\alpha$. 
-Then, envision that a third species colonizes the environment and takes a portion of resources equal to $\alpha$ away from the second species.
-Imagine this process continuing until *N* is zero.
-The only fitted parameter is the preemption coefficient $\alpha$, which gives the decay rate of abundance per rank. 
-The expected abundance (*a*) of species at rank *r* is $a_r = N \cdot \alpha \cdot (1 - \alpha)^{(r - 1)}$. 
-
-#### Lognormal:
-Many statistical tests and models assume that data are normally distributed. 
-However, species abundances are rarely ever normally distributed and there is almost always an excess of rare species.
-The lognormal model presumes that species abundances become normally distributed under *logarithmic transformation*.
-Log-transforming species abundances decreases the disparity between rare and dominant species, e.g., 0 = log(1) and 3 = log(1000).
-The lognormal model was introduced into ecology by Frank Preston in 1948 and is one of the most widely successful species abundance models. 
-The expected abundance (*a*) of species at rank *r* is $\textrm{exp} [\textrm{log}(\mu) + \textrm{log}(\sigma)\Phi]$, where $\Phi$ is a standard normal function, $\mu$ is the fitted mean abundance, and $\sigma$ is the fitted standard deviation of abundances. 
-
-#### Zipf:
-The Zipf model is based on Zipf's Law (see: https://en.wikipedia.org/wiki/Zipf's_law).
-In short, the abundance of a species in the RAC is inversely proportional to its rank in abundance.
-The expected abundance (*a*) of species at rank *r* is: $a_r = N \cdot p_1 \cdot r^{\gamma}$, where $\it{p_1}$ is the fitted proportion of the most abundant species, and $\gamma$ is a decay coefficient.
-
-#### Mandelbrot:
-Shortened name for the Zipf–Mandelbrot model.
-This model adds one parameter ($\beta$) to the Zipf model. 
-Ecologically, $\beta$ can be thought of as a parameter that controls the evenness of the predicted RAC. For example, a positive $\beta$ increases the evenness among highly abundant species while a negative value decreases evenness. 
-The expected abundance of a species (*a*) at rank *r* is $a_r = N \cdot c \cdot (r + \beta)^{\gamma}$.
