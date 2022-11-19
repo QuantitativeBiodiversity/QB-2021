@@ -30,9 +30,11 @@ You should notice that the answer is highlighted in green by RStudio (color may 
 6. When you have completed the worksheet, **Knit** the text and code into a single PDF file by pressing the `Knit` button in the RStudio scripting panel.
 This will save the PDF output in your '8.BetaDiversity' folder.
 7. After Knitting, please submit the worksheet by making a **push** to your GitHub repo and then create a **pull request** via GitHub.
-Your pull request should include this file (**8.BetaDiversity_1_Worksheet.Rmd**) with all code blocks filled out and questions answered) and the PDF output of `Knitr` (**8.BetaDiversity_1_Worksheet.pdf**).
+Your pull request should include this file 
+(**8.BetaDiversity_1_Worksheet.Rmd**) with all code blocks filled out and questions answered) and the PDF output of `Knitr`  
+(**8.BetaDiversity_1_Worksheet.pdf**).
 
-The completed exercise is due on **Wednesday, April 14^th^, 2021 before 12:00 PM (noon)**.
+The completed exercise is due on **Friday, April 16^th^, 2021 before 09:00 AM**.
 
 ## 1) R SETUP
 
@@ -247,12 +249,13 @@ b.  Generate a hypothesis about which fish species are potential indicators of r
 
 ## SYNTHESIS
 
-Using the jelly bean data from class (i.e., JellyBeans.Source.txt and JellyBeans.txt):
+Using the `mobsim` package from the DataWrangling module last week, simulate two local communities each containing 1000 individuals (*N*) and 25 species (*S*), but with one having a random spatial distribution and the other having a patchy spatial distribution. 
+Take ten (10) subsamples from each site using the quadrat function and answer the following questions:
 
-1) Compare the average pairwise similarity among subsamples in group A to the average pairswise similarity 
-among subsamples in group B. 
-Use a t-test to determine whether compositional similarity was affected by the "vicariance" event. 
-Finally, compare the compositional similarity of jelly beans in group A and group B to the source community?
 
-2) Create a cluster diagram or ordination using the jelly bean data. 
-Are there any visual trends that would suggest a difference in composition between group A and group B?
+1) Compare the average pairwise similarity among subsamples in site 1 (random spatial distribution) to the average pairswise similarity among subsamples in site 2 (patchy spatial distribution). 
+Use a t-test to determine whether compositional similarity was affected by the spatial distribution. 
+Finally, compare the compositional similarity of site 1 and site 2 to the source community?
+
+2) Create a cluster diagram or ordination using your simulated data. 
+Are there any visual trends that would suggest a difference in composition between site 1 and site 2? Describe.
